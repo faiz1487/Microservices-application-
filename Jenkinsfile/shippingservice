@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        DOCKER_NAME = 'harishnshetty/shippingservice'
+        DOCKER_NAME = 'faiz18887/shippingservice'
         IMAGE_NAME = 'shippingservice'
         // This is a global definition. We'll ensure it's used correctly below.
         GO_BIN_PATH = '$(go env GOPATH)/bin'
@@ -22,7 +22,7 @@ pipeline {
 
         stage("Git Checkout") {
             steps {
-                git branch: 'main', url: 'https://github.com/harishnshetty/Google-microservices-devsecops-project.git'
+                git branch: 'main', url: 'https://github.com/faiz1487/Microservices-application-.git'
             }
         }
 
@@ -182,7 +182,7 @@ pipeline {
                 dir('src/shippingservice') {
                     script {
                         withCredentials([string(credentialsId: 'docker-cred', variable: 'dockerpwd')]) {
-                            sh "docker login -u harishnshetty -p ${dockerpwd}"
+                            sh "docker login -u faiz18887 -p ${dockerpwd}"
                             sh "docker tag $IMAGE_NAME ${env.IMAGE_TAG}"
                             sh "docker push ${env.IMAGE_TAG}"
 
@@ -230,7 +230,6 @@ pipeline {
                         subject: "Pipeline ${buildStatus}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                         body: """
                             <p>shippingservice Google-Shop DevSecops pipeline status.</p>
-                            <p>Youtube Link :- https://www.youtube.com/@devopsHarishNShetty </p>
                             <p>Project: ${env.JOB_NAME}</p>
                             <p>Build Number: ${env.BUILD_NUMBER}</p>
                             <p>Build Status: ${buildStatus}</p>
@@ -238,8 +237,8 @@ pipeline {
                             <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
 
                         """,
-                        to: 'harishn662@gmail.com',
-                        from: 'harishn662@gmail.com',
+                        to: 'faizankaishar2@gmail.com',
+                        from: 'faizankaishar2@gmail.com',
                         mimeType: 'text/html',
                         attachmentsPattern: 'trivy-fs-report.txt,trivy-image-shippingservice.json,trivy-image-shippingservice.txt,gosec-report.json'
                     )
