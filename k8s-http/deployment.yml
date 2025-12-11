@@ -28,7 +28,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: harishnshetty/emailservice:latest
+        image: faiz18887/emailservice:latest
         ports:
         - containerPort: 8080
         env:
@@ -81,7 +81,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: harishnshetty/checkoutservice:latest
+          image: faiz18887/checkoutservice:latest
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -143,7 +143,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/recommendationservice:latest
+        image: faiz18887/recommendationservice:latest
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -200,7 +200,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: harishnshetty/frontend:latest
+          image: faiz18887/frontend:latest
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -299,7 +299,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/paymentservice:latest
+        image: faiz18887/paymentservice:latest
         ports:
         - containerPort: 50051
         env:
@@ -351,7 +351,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/productcatalogservice:latest
+        image: faiz1887/productcatalogservice:latest
         ports:
         - containerPort: 3550
         env:
@@ -403,7 +403,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/cartservice:latest
+        image: faiz18887/cartservice:latest
         ports:
         - containerPort: 7070
         env:
@@ -467,7 +467,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: harishnshetty/loadgenerator:latest
+        image: faiz18887/loadgenerator:latest
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
@@ -498,7 +498,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/currencyservice:latest
+        image: faiz18887/currencyservice:latest
         ports:
         - name: grpc
           containerPort: 7000
@@ -550,7 +550,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: harishnshetty/shippingservice:latest
+        image: faiz18887/shippingservice:latest
         ports:
         - containerPort: 50051
         env:
@@ -656,7 +656,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: harishnshetty/adservice:latest
+        image: faiz18887/adservice:latest
         ports:
         - containerPort: 9555
         env:
