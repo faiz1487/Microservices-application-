@@ -2,11 +2,6 @@
 
 ## This project Forked from the https://github.com/GoogleCloudPlatform/microservices-demo (Org source)
 
-## For more projects, check out  
-[https://harishnshetty.github.io/projects.html](https://harishnshetty.github.io/projects.html)
-
-[![Video Tutorial](https://github.com/harishnshetty/image-data-project/blob/5d2e06ffa3dd7687607b0c7d4892a6b161c077f9/10%20microservice%20online%20shop%20project.jpg)](https://youtu.be/KNH_qe1vJAg)
-
 **Online Boutique** is a cloud-first microservices demo application.  The application is a
 web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
 
@@ -617,7 +612,6 @@ Password: encrypted-password
 ---
 
 ##  Delete EKS Cluster (Cleanup) finally u done a project 
- - For more conents reach out https://harishnshetty.github.io/projects.html
 
 ```bash
 eksctl delete cluster --name my-cluster --region ap-south-1
