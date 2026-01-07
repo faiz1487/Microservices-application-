@@ -1,6 +1,7 @@
 #  Online shopping E-commerce Website and 11 MicroService DevSecops Project with K8s.
 
 ## This project Forked from the https://github.com/GoogleCloudPlatform/microservices-demo (Org source)
+## https://github.com/faiz1487/Microservices-application-.git
 
 **Online Boutique** is a cloud-first microservices demo application.  The application is a
 web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
@@ -45,9 +46,8 @@ microservices](/docs/img/architecture-diagram.png)](https://youtu.be/KNH_qe1vJAg
 - [Jenkins Credentials to Store](#jenkins-credentials-to-store)
 - [Jenkins Tools Configuration](#jenkins-tools-configuration)
 - [Jenkins System Configuration](#jenkins-system-configuration)
-- [EKS ALB Ingress Kubernetes Setup Guide](#eks-alb-ingress-kubernetes-setup-guide)
+- [GKE Kubernetes Setup Guide](#GKE-kubernetes-setup-guide)
 - [Monitor Kubernetes with Prometheus](#monitor-kubernetes-with-prometheus)
-- [Installing Argo CD](#installing-argo-cd)
 - [Notes and Recommendations](#notes-and-recommendations)
 
 ---
@@ -66,8 +66,8 @@ This guide assumes an Ubuntu/Debian-like environment and sudo privileges.
 | HTTP            | 80    |
 | HTTPS           | 443   |
 | SSH             | 22    |
-| Jenkins         |       |
-| SonarQube       |       |
+| Jenkins         | 8080  |
+| SonarQube       | 9000  |
 
 ## System Update & Common Packages
 
@@ -307,216 +307,181 @@ Webhook example:
 
 ---
 # Now See the configuration pipeline of the Jenkins
+---
+# 🚀 Develop & Deploy Online Boutique on GCP GKE (UI + CLI)
 
-
-
-## EKS ALB Ingress Kubernetes Setup Guide
-# EKS cluster setup and  ALB Ingress Kubernetes Setup Guide
-
-This guide covers the installation and setup for AWS CLI, `kubectl`, `eksctl`, and `helm`, and creating/configuring an EKS cluster with AWS Load Balancer Controller.
+This guide explains **how to develop and deploy the Online Boutique (11 microservices)** on **Google Kubernetes Engine (GKE)** using **GCP Console (UI)** and **CLI commands**.
 
 ---
 
-## 1. AWS CLI Installation
+## 🔹 Phase 1: GCP Console (UI) – Initial Setup
 
-Refer: [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+### 1️⃣ Create / Select GCP Project
+
+1. Go to **GCP Console → Project Selector**
+2. Click **New Project**
+3. Project name: `gke-microservices-demo`
+4. Click **Create**
+
+---
+
+### 2️⃣ Enable Required APIs
+
+GCP Console → **APIs & Services → Enable APIs**
+
+Enable:
+- Kubernetes Engine API
+- Artifact Registry API
+- Compute Engine API
+- Cloud Build API
+
+---
+
+### 3️⃣ Create GKE Cluster (UI Method)
+
+GCP Console → **Kubernetes Engine → Clusters → Create**
+
+Choose:
+- Mode: **Standard**
+- Cluster name: `online-boutique-gke`
+- Region: `asia-south1`
+- Zonal: `asia-south1-a`
+
+**Node Pool Configuration**
+- Machine type: `e2-standard-4`
+- Nodes: `3`
+- Image type: Container-Optimized OS
+
+Click **Create**
+
+---
+
+### 4️⃣ Configure kubectl Access
+
+GCP Console → **Clusters → Connect → Run in Cloud Shell**
 
 ```bash
-sudo apt install -y unzip
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+gcloud container clusters get-credentials online-boutique-gke \
+  --zone asia-south1-a
 ```
 
----
-
-## 2. kubectl Installation
-
-Refer: [kubectl Installation Guide](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-
+Verify:
 ```bash
-sudo apt-get update
-# apt-transport-https may be a dummy package; if so, you can skip that package
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
-
-# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
-# sudo mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
-
-# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
-
-sudo apt-get update
-sudo apt-get install -y kubectl bash-completion
-
-# Enable kubectl auto-completion
-echo 'source <(kubectl completion bash)' >> ~/.bashrc
-echo 'alias k=kubectl' >> ~/.bashrc
-echo 'complete -F __start_kubectl k' >> ~/.bashrc
-
-# Apply changes immediately
-source ~/.bashrc
-```
-
----
-
-## 3. eksctl Installation
-
-Refer: [eksctl Installation Guide](https://eksctl.io/installation/)
-
-```bash
-# for ARM systems, set ARCH to: `arm64`, `armv6` or `armv7`
-ARCH=amd64
-PLATFORM=$(uname -s)_$ARCH
-
-curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-
-# (Optional) Verify checksum
-curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep $PLATFORM | sha256sum --check
-
-tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
-
-sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
-
-# Install bash completion
-sudo apt-get install -y bash-completion
-
-# Enable eksctl auto-completion
-echo 'source <(eksctl completion bash)' >> ~/.bashrc
-echo 'alias e=eksctl' >> ~/.bashrc
-echo 'complete -F __start_eksctl e' >> ~/.bashrc
-
-# Apply changes immediately
-source ~/.bashrc
+kubectl get nodes
 ```
 
 ---
 
-## 4. Helm Installation
+## 🔹 Phase 2: Artifact Registry (UI + CLI)
 
-Refer: [Helm Installation Guide](https://helm.sh/docs/intro/install/)
+### 5️⃣ Create Docker Repository (UI)
+
+GCP Console → **Artifact Registry → Create Repository**
+
+- Name: `microservices-repo`
+- Format: Docker
+- Location: asia-south1
+
+---
+
+### 6️⃣ Authenticate Docker
 
 ```bash
-sudo apt-get install curl gpg apt-transport-https --yes
-curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-echo "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-sudo apt-get update
-sudo apt-get install helm bash-completion
-
-# Enable Helm auto-completion
-echo 'source <(helm completion bash)' >> ~/.bashrc
-echo 'alias h=helm' >> ~/.bashrc
-echo 'complete -F __start_helm h' >> ~/.bashrc
-
-# Apply changes immediately
-source ~/.bashrc
+gcloud auth configure-docker asia-south1-docker.pkg.dev
 ```
 
 ---
 
-## 5. AWS CLI Configuration
+## 🔹 Phase 3: Application Build & Push
+
+### 7️⃣ Clone the Project
 
 ```bash
-aws configure
-aws configure list
-```
-
-
----
-
-## 6. Create EKS Cluster and Nodegroup (Try-This)
-
-```bash
-eksctl create cluster \
-  --name my-cluster \
-  --region ap-south-1 \
-  --version 1.33 \
-  --without-nodegroup
-
-eksctl create nodegroup \
-  --cluster my-cluster \
-  --name my-nodes-ng \
-  --nodes 3 \
-  --nodes-min 3 \
-  --nodes-max 6 \
-  --node-type t3.medium
+git clone https://github.com/faiz1487/Microservices-application-.git
+cd microservices-demo
 ```
 
 ---
 
-## 7. Update kubeconfig
+### 8️⃣ Build & Push Docker Images (Example: frontend)
 
 ```bash
-aws eks update-kubeconfig --name my-cluster --region ap-south-1
+export PROJECT_ID=$(gcloud config get-value project)
+export REGION=asia-south1
+
+cd src/frontend
+
+docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/microservices-repo/frontend:v1 .
+docker push $REGION-docker.pkg.dev/$PROJECT_ID/microservices-repo/frontend:v1
+```
+
+Repeat for all services or use CI/CD.
+
+---
+
+## 🔹 Phase 4: Kubernetes Deployment
+
+### 9️⃣ Create Namespace
+
+```bash
+kubectl create namespace online-boutique
 ```
 
 ---
 
-## 8. Associate IAM OIDC Provider
+### 🔟 Update Image Paths in YAML
 
-```bash
-eksctl utils associate-iam-oidc-provider --cluster my-cluster --approve
+Edit Kubernetes manifests:
+
+```yaml
+image: asia-south1-docker.pkg.dev/PROJECT_ID/microservices-repo/frontend:v1
 ```
 
 ---
 
-## 9. Create IAM Policy for AWS Load Balancer Controller
-
-New policy link: [AWS EKS LBC Policy](https://docs.aws.amazon.com/eks/latest/userguide/lbc-manifest.html)
+### 1️⃣1️⃣ Deploy All Services
 
 ```bash
-curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.13.3/docs/install/iam_policy.json
+kubectl apply -f ./release/kubernetes-manifests.yaml -n online-boutique
+```
 
-aws iam create-policy \
-  --policy-name AWSLoadBalancerControllerIAMPolicy \
-  --policy-document file://iam_policy.json
+Check status:
+```bash
+kubectl get pods -n online-boutique
 ```
 
 ---
 
-## 10. Create IAM Service Account
+## 🔹 Phase 5: Expose Application
 
-Replace `<ACCOUNT_ID>` with your AWS account ID.
+### 1️⃣2️⃣ Create LoadBalancer Service
 
 ```bash
-eksctl create iamserviceaccount \
-  --cluster=my-cluster \
-  --namespace=kube-system \
-  --name=aws-load-balancer-controller \
-  --attach-policy-arn=arn:aws:iam::<ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
-  --override-existing-serviceaccounts \
-  --region ap-south-1 \
-  --approve
+kubectl expose deployment frontend \
+  --type=LoadBalancer \
+  --name=frontend-external \
+  -n online-boutique
+```
+
+Get External IP:
+```bash
+kubectl get svc -n online-boutique
+```
+
+Open in browser:
+```
+http://EXTERNAL-IP
 ```
 
 ---
 
-## 11. Install AWS Load Balancer Controller via Helm
+## 🔹 Phase 6: UI Verification (GCP Console)
 
-```bash
-helm repo add eks https://aws.github.io/eks-charts
-helm repo update eks
+GCP Console → **Kubernetes Engine → Workloads**
+- Verify all 11 services are **Running**
 
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
-  --set clusterName=my-cluster \
-  --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller \
-  --set region=ap-south-1 \
-  --version 1.13.3
-```
-
-**Optional:** List available versions:
-```bash
-helm search repo eks/aws-load-balancer-controller --versions
-helm list -A
-```
-
-**Verify installation:**
-```bash
-kubectl get deployment -n kube-system aws-load-balancer-controller
-```
+GCP Console → **Services & Ingress**
+- Confirm frontend LoadBalancer
 
 ---
 
@@ -573,52 +538,22 @@ kubectl get svc -n prometheus
 | Node Exporter | 1860 |
 | Kubernetes / Views / Namespace | 15758 |
 
----
----
-
-## Installing Argo CD on the eks cluster
-
-  - Docs: https://www.eksworkshop.com/docs/automation/gitops/argocd/access_argocd
-  - Docs: https://github.com/argoproj/argo-helm
-
-# Argocd installation via helm chart
-
-```bash
-helm repo add argo https://argoproj.github.io/argo-helm
-helm repo update
 ```
-
-```bash
-kubectl create namespace argocd 
-helm install argocd argo/argo-cd --namespace argocd
-kubectl get all -n argocd 
-kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}' 
-```
-# Another way to get the loadbalancer of the argocd alb url
-
-```bash
-sudo apt install jq -y
-
-kubectl get svc argocd-server -n argocd -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname'
-```
-
-Username: admin
-
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
----
-Password: encrypted-password
----
-
 ##  Delete EKS Cluster (Cleanup) finally u done a project 
 
 ```bash
 eksctl delete cluster --name my-cluster --region ap-south-1
 ```
+## 🔹 Phase 9: Cleanup
 
-## Notes and Recommendations
+```bash
+gcloud container clusters delete online-boutique-gke \
+  --zone asia-south1-a
+---
 
-- Replace `<VERSION>`, `<your-server-ip>`, and other placeholders with specific values for your setup.
-- Prefer pinned versions for production environments rather than "latest".
-- Consult each project's official documentation for the most up-to# Microservices-application-
+## ✅ Final Result
+
+✔ 11 Microservices running on GKE  
+✔ LoadBalancer exposed frontend  
+✔ Logs & metrics visible in GCP UI  
+✔ Production-ready DevSecOps project
