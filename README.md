@@ -1,4 +1,4 @@
-#  Online shopping E-commerce Website and 11 MicroService DevSecops Project with K8s, Gitops.
+#  Online shopping E-commerce Website and 11 MicroService DevSecops Project with K8s.
 
 ## This project Forked from the https://github.com/GoogleCloudPlatform/microservices-demo (Org source)
 
